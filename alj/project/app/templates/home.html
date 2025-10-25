@@ -1,0 +1,14 @@
+<html>
+<head>
+    <title>Fitness Website</title>
+</head>
+<body>
+    <h1>Welcome to the Fitness Website</h1>
+    <p>Book your session below:</p>
+    <ul>
+        {% for session in sessions %}
+            <li>{{ session.session_date }} ({{ session.duration }} minutes)</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
