@@ -1,14 +1,85 @@
-<html>
-<head>
-    <title>Fitness Website</title>
-</head>
-<body>
-    <h1>Welcome to the Fitness Website</h1>
-    <p>Book your session below:</p>
-    <ul>
-        {% for session in sessions %}
-            <li>{{ session.session_date }} ({{ session.duration }} minutes)</li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+{% extends 'base.html' %}
+{% load tz %}
+{% block title %}Fitness Club | Home{% endblock %}
+{% block content %}
+<section class="hero text-center text-lg-start text-white mb-5 shadow-lg">
+    <div class="row align-items-center g-4">
+        <div class="col-lg-7">
+            <h1 class="display-4 fw-bold mb-3">Personal training crafted for your goals</h1>
+            <p class="lead text-white-50 mb-4">Discover expert coaches, curated workouts, and data-driven progress tracking. Book a session and start building your strongest self today.</p>
+            <div class="d-flex flex-column flex-sm-row gap-3">
+                <a href="{% url 'register' %}" class="btn btn-primary btn-lg px-4">Join the club</a>
+                <a href="#sessions" class="btn btn-outline-light btn-lg px-4">Browse sessions</a>
+            </div>
+        </div>
+        <div class="col-lg-5 text-center">
+            <div class="bg-dark bg-opacity-50 border border-primary-subtle rounded-4 p-4 h-100">
+                <h2 class="h4 text-uppercase text-primary">Next available session</h2>
+                {% if next_session %}
+                    <p class="fs-4 fw-semibold text-white mt-3 mb-2">{{ next_session.session_date|localtime|date:"l, F j" }}</p>
+                    <p class="text-white-50 mb-1">Duration: {{ next_session.duration }} minutes</p>
+                    <p class="text-white-50">Coach: {{ next_session.user.get_full_name|default:next_session.user.username }}</p>
+                {% else %}
+                    <p class="text-white-50 mt-3">No open sessions right now. Check back soon!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+<section id="sessions" class="mb-5">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h2 class="h3 fw-bold">Upcoming sessions</h2>
+            <p class="text-white-50 mb-0">Reserve your spot before they fill up.</p>
+        </div>
+        <span class="badge text-bg-primary rounded-pill py-2 px-3">{{ sessions|length }} sessions</span>
+    </div>
+    {% if sessions %}
+        <div class="row g-4">
+            {% for session in sessions %}
+                <div class="col-md-6 col-xl-4">
+                    <div class="card h-100 border-0 shadow-lg bg-dark bg-opacity-75">
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <p class="text-primary text-uppercase small fw-semibold mb-1">{{ session.session_date|localtime|date:"M d, Y" }}</p>
+                                    <h3 class="h5 text-white">{{ session.session_date|localtime|date:"g:i A" }}</h3>
+                                </div>
+                                {% if session.is_booked %}
+                                    <span class="badge bg-danger">Booked</span>
+                                {% else %}
+                                    <span class="badge bg-success">Open</span>
+                                {% endif %}
+                            </div>
+                            <p class="text-white-50 mb-4">Duration: {{ session.duration }} minutes<br>Coach: {{ session.user.get_full_name|default:session.user.username }}</p>
+                            <div class="mt-auto">
+                                {% if session.is_booked %}
+                                    <button class="btn btn-outline-secondary w-100" disabled>Already booked</button>
+                                {% else %}
+                                    <a href="{% url 'book_session' session.id %}" class="btn btn-primary w-100">Book this session</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5 bg-dark bg-opacity-75 rounded-4 border border-secondary">
+            <h3 class="text-white">No sessions available yet</h3>
+            <p class="text-white-50">Check back soon or contact your trainer to add new availability.</p>
+        </div>
+    {% endif %}
+</section>
+<section class="bg-dark bg-opacity-75 rounded-4 p-5 border border-secondary">
+    <div class="row g-4 align-items-center">
+        <div class="col-lg-8">
+            <h2 class="h3 fw-bold mb-3">Track your progress</h2>
+            <p class="text-white-50 mb-0">Stay motivated with weekly check-ins, visual progress charts, and tailored recommendations that adapt as you grow stronger.</p>
+        </div>
+        <div class="col-lg-4 text-lg-end text-center">
+            <a href="{% url 'register' %}" class="btn btn-outline-light btn-lg px-4">Create your account</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

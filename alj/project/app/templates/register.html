@@ -1,13 +1,30 @@
-<html>
-<head>
-    <title>Register</title>
-</head>
-<body>
-    <h1>Register</h1>
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Register</button>
-    </form>
-</body>
-</html>
+{% extends 'base.html' %}
+{% block title %}Fitness Club | Register{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="bg-dark bg-opacity-75 border border-secondary rounded-4 shadow-lg p-5">
+            <h1 class="h3 fw-bold text-center mb-4">Create your account</h1>
+            <p class="text-white-50 text-center mb-4">Unlock personalized workouts, nutrition guidance, and expert coaching tailored just for you.</p>
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ form.non_field_errors|striptags }}
+                </div>
+            {% endif %}
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="mb-3">
+                        <label class="form-label text-uppercase small fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary w-100 py-2">Sign up</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
