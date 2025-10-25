@@ -1,12 +1,30 @@
-<html>
-<head>
-    <title>Book Session</title>
-</head>
-<body>
-    <h1>Book Session</h1>
-    <form method="POST">
-        {% csrf_token %}
-        <button type="submit">Book Now</button>
-    </form>
-</body>
-</html>
+{% extends 'base.html' %}
+{% load tz %}
+{% block title %}Fitness Club | Book Session{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="bg-dark bg-opacity-75 border border-secondary rounded-4 shadow-lg p-5 text-center">
+            <h1 class="h3 fw-bold mb-4">Confirm your booking</h1>
+            <p class="text-white-50">You're reserving a session with <strong>{{ session.user.get_full_name|default:session.user.username }}</strong>.</p>
+            <div class="bg-dark bg-opacity-50 border border-primary-subtle rounded-4 p-4 my-4">
+                <p class="fs-4 fw-semibold text-white mb-1">{{ session.session_date|localtime|date:"l, F j" }}</p>
+                <p class="text-white-50 mb-2">{{ session.session_date|localtime|date:"g:i A" }}</p>
+                <p class="text-white-50 mb-0">Duration: {{ session.duration }} minutes</p>
+            </div>
+            {% if session.is_booked %}
+                <div class="alert alert-danger" role="alert">
+                    This session has already been booked.
+                </div>
+                <a href="{% url 'home' %}" class="btn btn-outline-light">Return home</a>
+            {% else %}
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">Confirm booking</button>
+                </form>
+                <a href="{% url 'home' %}" class="btn btn-outline-light w-100">Choose a different session</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
